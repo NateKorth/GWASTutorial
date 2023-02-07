@@ -20,7 +20,7 @@ This is an imputed SNP file from: Miao, C., Xu, Y., Liu, S., Schnable, P.S. and 
 
 next grab the phenotype file:
 ```
-curl -o Phenotypes.csv https://raw.githubusercontent.com/NateKorth/GWASTutorial/main/nir_SC_Compiled_Rhodes2014.csv
+curl -o PhenotypesRaw.csv https://raw.githubusercontent.com/NateKorth/GWASTutorial/main/nir_SC_Compiled_Rhodes2014.csv
 ```
 ### Calculate BLUPs using Sommer package
 First download the sommer package in R v4.0
@@ -29,5 +29,7 @@ ml R/4.0
 R
 >install.packages("sommer")
 ```
-Use the R script: CalculateBLUPs.R to calculate BLUPs for the phenotypes 
+Use the R script: CalculateBLUEs.R to calculate BLUEs for the phenotypes
+
+Once you have your BLUEs we'll need to make sure the Lines in the phenotype file match those in the genotype file 
 
