@@ -17,6 +17,9 @@ This is an imputed SNP file from: Miao, C., Xu, Y., Liu, S., Schnable, P.S. and 
 
 next grab the phenotype file:
 ```
-
+curl -o Phenotypes.csv https://raw.githubusercontent.com/NateKorth/GWASTutorial/main/nir_SC_Compiled_Rhodes2014.csv
 ```
+# Calculate BLUPs using Sommer package
+
+Use the R script: CalculateBLUPs.R to calculate BLUPs for the phenotypes 
 
