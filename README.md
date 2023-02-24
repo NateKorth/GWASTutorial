@@ -65,7 +65,7 @@ filter snps with high heterozygosity using bcftools
 ml bcftools
 bcftools filter SAP_imputed_Filter2.recode.vcf --exclude 'F_PASS(GT=="het") < 0.1' -o SAP_imputed_Filter3.vcf
 ```
-###GWAS
+### GWAS
 Almost! We'll be using rMVP, first we'll need to format the genotype data specifically for the program by running the Rscript: PrepGenoForMVP.R
 This is getting big enough that we should batch this job in a slurm file (See RunR.sh)
 
