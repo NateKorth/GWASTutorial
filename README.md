@@ -37,7 +37,7 @@ make sure it ends up in your input folder
 ```
 curl -o PhenotypesRaw.csv https://raw.githubusercontent.com/NateKorth/GWASTutorial/main/nir_SC_Compiled_Rhodes2014.csv
 ```
-### Calculate BLUPs using Sommer package
+### Calculate BLUEs using Sommer package
 First download the sommer package in R v4.0
 ```
 ml R/4.0
@@ -48,19 +48,26 @@ Use the R script: CalculateBLUEs.R to calculate BLUEs for the phenotypes
 Within this script you'll import the list of genotypes to filter out any lines we don't have genetic information for.
 And you'll generate a list of sorghum lines in the phenotype to filter the genotype.
 
+### Genotype file filtering
 We need to make sure the Lines in the phenotype file and genotype file match, using the "LinesInPheno.csv" we just generated in R, now filter the genotype file:
 ```
 #We're starting to get to bigger jobs, it might be wise to start batching these via .slurm files
 ml vcftools
 vcftools --vcf SAP_imputed.vcf --out SAP_imputed_Filter1 --keep ../../Scripts/LinesInPheno.csv --recode
 ```
-Next we're going to filter the genotype file by heterozygosity and minor allele frequency:
+Next we're going to filter the genotype file minor allele frequency:
 ```
 ml vcftools
-vcftools --vcf SAP_imputed_Filter1 --out SAP_imputed_Filter2 --recode
-
+vcftools --vcf SAP_imputed_Filter1.recode.vcf --out SAP_imputed_Filter2 --maf 0.05 --recode
 ```
-
+filter snps with high heterozygosity using bcftools
+```
+ml bcftools
+bcftools filter SAP_imputed_Filter2.recode.vcf --exclude 'F_PASS(GT=="het") < 0.1' -o SAP_imputed_Filter3.vcf
+```
+###GWAS
+Almost! We'll be using rMVP, first we'll need to format the genotype data specifically for the program by running the Rscript: PrepGenoForMVP.R
+This is getting big enough that we should batch this job in a slurm file (See RunR.sh)
 
 
 
