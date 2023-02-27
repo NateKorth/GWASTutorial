@@ -33,10 +33,9 @@ names(Traits)<-"Traits"
 
 #We'll use year as a random effect to calculate BLUES, we'll need to change it from a numeric to a character
 df3$Year<-as.character(df3$Year)
-df3$Rep<-as.character(df3$Rep)
 
 #Calculate BLUEs for single trait:
-fitB <-mmer(Phenols~PI, random=~Year+Rep, rcov=~units, data=df3)
+fitB <-mmer(Phenols~PI, random=~Year, rcov=~units, data=df3)
 #Let's look at the fit of our model:
 summary(fitB)
 
@@ -53,7 +52,7 @@ BLUEsdf$PI<-BLUEs3$PI
 #A function to calculate BLUEs (useful when screeing a ton of traits
 getBLUE <- function(trait){
   f <- formula(paste0(trait, '~PI'))
-  fit <- mmer(f , random=~Year+Rep, rcov=~units, data=df3)
+  fit <- mmer(f , random=~Year, rcov=~units, data=df3)
   BLUEs2<-predict.mmer(object = fit,classify = "PI")
   BLUEs3<-BLUEs2$pvals[,3]
   names(BLUEs3)<-paste0(trait)
