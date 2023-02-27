@@ -86,7 +86,11 @@ For more details on rMVP see:
 https://github.com/xiaolei-lab/rMVP
 
 Now we're ready to start a GWAS the basic script to use is RunRMVP.R, which will run mlm and FarmCPU and automatically make figures for you. 
-#TODO make a slurm file called RunR_3.sh to batch it to hcc 
+#TODO make a slurm file called RunR_3.sh to batch on hcc, allocate 100 GB on 1 node and this will run pretty fast. 
+Have the script submit the R file and move all the output files to the output folder 
+
+Use your favorite file transfer system to move all the output to your computer to view the files.
+
 
 
 
