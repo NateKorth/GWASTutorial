@@ -67,6 +67,10 @@ for (i in Traits$Traits){
 
 names(BLUEsdf)<-c("PI","Phenols",Traits$Traits)
 
+#Sort the BLUEs by lines in the genotype file:
+LinesInHmp3<-LinesInHmp2[which(LinesInHmp2$V1 %in% LinesInPheno$`unique(df3$PI)`),]
+BLUEsdf<-BLUEsdf[match(LinesInHmp3,BLUEsdf$PI),]
+
 #Export your BLUEs:
 write.table(BLUEsdf,"Phenotypes.csv",row.names=FALSE,quote=FALSE,sep = ",")
 
