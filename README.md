@@ -45,7 +45,7 @@ make sure it ends up in your input folder
 ```
 curl -o PhenotypesRaw.csv https://raw.githubusercontent.com/NateKorth/GWASTutorial/main/nir_SC_Compiled_Rhodes2014.csv
 ```
-
+##Step2: Calculate BLUEs
 ### Calculate BLUEs using Sommer package
 
 Use the R script: CalculateBLUEs.R to calculate BLUEs for the phenotypes
@@ -56,7 +56,7 @@ You can do this is your local R, on HCC in R, or batch it as a job using RunR_1.
 
 For more details on he sommer package see: https://cran.r-project.org/web/packages/sommer/vignettes/v3.sommer.qg.pdf
 
-### Genotype file filtering
+##Step3: Genotype filtering
 
 We need to make sure the Lines in the phenotype file and genotype file match, using the "LinesInPheno.csv" we just generated in R, now filter the genotype file:
 ```
@@ -74,7 +74,7 @@ filter snps with high heterozygosity using bcftools
 ml bcftools
 bcftools filter SAP_imputed_Filter2.recode.vcf --exclude 'F_PASS(GT=="het") < 0.1' -o SAP_imputed_Filter3.vcf
 ```
-### GWAS
+##Step.4 GWAS
 Almost! We'll be using rMVP, first we'll need to format the genotype data specifically for the program by running the Rscript: PrepGenoForMVP.R
 This is getting big enough that we should batch this job in a slurm file (RunR_2.sh)
 
