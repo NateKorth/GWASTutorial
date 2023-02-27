@@ -10,6 +10,7 @@ mkdir GWASTutorial
 mkdir GWASTutorial/input
 mkdir GWASTutorial/input/Genotype
 mkdir GWASTutorial/Scripts
+mkdir GWASTutorial/Output
 
 ```
 Next we'll install the R packages we'll need for this pipeline in R on HCC:
