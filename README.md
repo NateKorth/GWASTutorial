@@ -12,6 +12,13 @@ mkdir GWASTutorial/input/Genotype
 mkdir GWASTutorial/Scripts
 
 ```
+Next we'll install the R packages we'll need for this pipeline in R on HCC:
+```
+ml R/4.0
+R
+>install.packages("sommer")
+>install.packages("rMVP")
+```
 
 Download the genotype data from the following location and transfer to Genotype folder:
 ```
@@ -37,18 +44,19 @@ make sure it ends up in your input folder
 ```
 curl -o PhenotypesRaw.csv https://raw.githubusercontent.com/NateKorth/GWASTutorial/main/nir_SC_Compiled_Rhodes2014.csv
 ```
+
 ### Calculate BLUEs using Sommer package
-First download the sommer package in R v4.0
-```
-ml R/4.0
-R
->install.packages("sommer")
-```
+
 Use the R script: CalculateBLUEs.R to calculate BLUEs for the phenotypes
 Within this script you'll import the list of genotypes to filter out any lines we don't have genetic information for.
 And you'll generate a list of sorghum lines in the phenotype to filter the genotype.
 
+You can do this is your local R, on HCC in R, or batch it as a job using RunR_1.sh (But I encourage you to first look through and see what the script is doing)
+
+For more details on he sommer package see: https://cran.r-project.org/web/packages/sommer/vignettes/v3.sommer.qg.pdf
+
 ### Genotype file filtering
+
 We need to make sure the Lines in the phenotype file and genotype file match, using the "LinesInPheno.csv" we just generated in R, now filter the genotype file:
 ```
 #We're starting to get to bigger jobs, it might be wise to start batching these via .slurm files
@@ -67,7 +75,20 @@ bcftools filter SAP_imputed_Filter2.recode.vcf --exclude 'F_PASS(GT=="het") < 0.
 ```
 ### GWAS
 Almost! We'll be using rMVP, first we'll need to format the genotype data specifically for the program by running the Rscript: PrepGenoForMVP.R
-This is getting big enough that we should batch this job in a slurm file (See RunR.sh)
+This is getting big enough that we should batch this job in a slurm file (RunR_2.sh)
+
+This script will prepare your genotype file, a map file, a kinship matrix, and the first 3 principle components describing each sorghum genotype. Check your output you should have binary files and .desc (description) files that contain information that describes the location and contents of each outputted file 
+```
+sbatch RunR_2.sh
+```
+For more details on rMVP see: 
+https://github.com/xiaolei-lab/rMVP
+
+Now we're ready to start a GWAS the basic script to use is RunRMVP.R, which will run mlm and FarmCPU and automatically make figures for you. 
+#TODO make a slurm file called RunR_3.sh to batch it to hcc 
+
+
+
 
 
 
