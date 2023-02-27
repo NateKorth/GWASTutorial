@@ -12,7 +12,7 @@ imMVP <- MVP(phe=phenotype2,geno=genotype,map=map,K=kinship,CV.FarmCPU=covariate
 
 #A loop to run all phenotypes
 
-#for(i in 2:ncol(phenotype)){
+#for(i in 2:ncol(phenotype1)){
 #   imMVP <- MVP(phe=phenotype1[,c(1,i)],geno=genotype,map=map,K=kinship,
 #    CV.FarmCPU=covariates_PC,priority="speed",maxLoop=10,ncpus=64,
 #    method.bin="FaST-LMM",method=c("FarmCPU","MLM")
