@@ -11,16 +11,8 @@ mkdir GWASTutorial/input
 mkdir GWASTutorial/input/Genotype
 mkdir GWASTutorial/Scripts
 mkdir GWASTutorial/Output
+```
 
-```
-Next we'll install the R packages we'll need for this pipeline in R on HCC:
-```
-ml R/4.0
-R
->install.packages("sommer")
->install.packages("rMVP")
-```
-exit R,
 Download the genotype data from the following location and transfer to Genotype folder:
 ```
 https://figshare.com/ndownloader/files/22670489
@@ -45,27 +37,81 @@ make sure it ends up in your input folder
 ```
 curl -o PhenotypesRaw.csv https://raw.githubusercontent.com/NateKorth/GWASTutorial/main/nir_SC_Compiled_Rhodes2014.csv
 ```
-In R we'll remove lines in the phenotype file that are not in the genotype file 
+We'll need the lines in our Genotype file and Phenotype file to match. There's one hundred ways to do this, we'll do it in R
+First we'll remove lines in the phenotype file that are not in the genotype file 
 ```
+ml R/4.0
+R
+df1<-read.csv("../input/nir_SC_Compiled_Rhodes2014_Korth2020.csv")
+
+#Remove any lines without a PI identifier
+df2<-subset(df1,PI!="NA")
+
+#Import the list of of genotypes:
+LinesInHmp<-read.delim("../input/geno/hmpHeader.tsv",header = FALSE)
+LinesInHmp2<-as.data.frame(t(LinesInHmp[12:369]))
+names(LinesInHmp2)<-"PI"
+
+#While we're thinking about lines and their names...
+#If you peak at the data sets you see the nominclature in the genotype file contains underscores while the phenotype file does not (Typical)
+#Lets just add those underscores in the phenotype file:
+
+df2$PI<-sub("PI","PI_",df2$PI)
+
+#Remove lines from the phenotype file that aren't in the genotype:
+df3<-df2[which(df2$PI %in% LinesInHmp2$PI),]
 ```
-And generate a list of lines in the genotype file not in
+
+Use df3 for downstream BLUE calculation or output a .csv file that contains the phenotypes filtered.
+
+Now output a list of lines in the genotype file that are not in the phenotype file
 ```
+LinesInPheno<-unique(df3$PI)
+write.table(LinesInPheno,"LinesInPheno.csv",col.names=FALSE,row.names=FALSE,quote=FALSE)
 ```
 ##Step2: Calculate BLUEs
 ### Calculate BLUEs using Sommer package
 Still within R on HCC
 
-First we'll design and test a linear model for for GWAS in R using the sommer package 
-
+Install the R packages we need to calculate BLUEs and run GWAS we'll design and test a linear model for for GWAS in R using the sommer package 
 ```
+>install.packages("sommer")
+>install.packages("rMVP")
+```
+Next we'll design and test a linear model looking at different factors we may need to include
+```
+library(sommer)
+#We'll use some of the "numerical" data as a random effect including year, to calculate BLUES, we'll need to change it from a numeric to a character
+df3$Year<-as.character(df3$Year)
+df3$Rep<-as.character(df3$Rep)
 
+#Let's start with Tannins
+#Fit a the most complex Linear model you can imagine:
+##Format: model <- mmer (Phenotype~FixedEffect, random=~RandomEffects, data=YourDataFrame)
+
+fit <-mmer(Tannins~PI, random=~Year+Env+Rep+Year:Env+Year:Rep+Env:Rep, rcov=~units, data=df3)
+#Let's look at the fit of our model:
+summary(fit)
+
+#Look at the AIC and BIC values for goodness of fit, and the varComp for how much variance is explained by each Random effect
+#Rep has a pretty small percentage of variance, let's remove it and see how it effects our Fit (when you remove Rep you should also remove interaction terms)
+
+fit2 <-mmer(Tannins~PI, random=~Year+Env+Year:Env, rcov=~units, data=df3)
+summary(fit2)
+
+#okay the AIC and BIC are slightly larger, that's okay a small increase percentage wise.
+#Notice something weird? All the variance-covariance components for Year are the same as Year:Env
+#Why is that? There's two environments and 4 years, but it's unbalanced data for the NE Env only 1 year is represented, the other 3 years are all present in Texas
+#This is causing the interaction effect to be equivilent to the year effect, let's remove it from our model
+
+fit3 <-mmer(Tannins~PI, random=~Year+Env, rcov=~units, data=df3)
+summary(fit3)
+
+#Okay this is looking better (not perfect but things are rarely perfect when working with real biological data)
 ```
 
 Edit the R script: CalculateBLUEs.R to reflect the model you've come up with
-Within this script you'll import the list of genotypes to filter out any lines we don't have genetic information for.
-And you'll generate a list of sorghum lines in the phenotype to filter the genotype.
-
-You can do this is your local R, on HCC in R, or batch it as a job using RunR_1.sh (But I encourage you to first look through and see what the script is doing)
+Batch the script as a job using RunR_1.sh
 
 For more details on he sommer package see: https://cran.r-project.org/web/packages/sommer/vignettes/v3.sommer.qg.pdf
 
