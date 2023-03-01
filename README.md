@@ -20,7 +20,7 @@ R
 >install.packages("sommer")
 >install.packages("rMVP")
 ```
-
+exit R,
 Download the genotype data from the following location and transfer to Genotype folder:
 ```
 https://figshare.com/ndownloader/files/22670489
@@ -45,10 +45,23 @@ make sure it ends up in your input folder
 ```
 curl -o PhenotypesRaw.csv https://raw.githubusercontent.com/NateKorth/GWASTutorial/main/nir_SC_Compiled_Rhodes2014.csv
 ```
+In R we'll remove lines in the phenotype file that are not in the genotype file 
+```
+```
+And generate a list of lines in the genotype file not in
+```
+```
 ##Step2: Calculate BLUEs
 ### Calculate BLUEs using Sommer package
+Still within R on HCC
 
-Use the R script: CalculateBLUEs.R to calculate BLUEs for the phenotypes
+First we'll design and test a linear model for for GWAS in R using the sommer package 
+
+```
+
+```
+
+Edit the R script: CalculateBLUEs.R to reflect the model you've come up with
 Within this script you'll import the list of genotypes to filter out any lines we don't have genetic information for.
 And you'll generate a list of sorghum lines in the phenotype to filter the genotype.
 
@@ -72,7 +85,7 @@ vcftools --vcf SAP_imputed_Filter1.recode.vcf --out SAP_imputed_Filter2 --maf 0.
 filter snps with high heterozygosity using bcftools
 ```
 ml bcftools
-bcftools filter SAP_imputed_Filter2.recode.vcf --exclude 'F_PASS(GT=="het") < 0.1' -o SAP_imputed_Filter3.vcf
+bcftools filter SAP_imputed_Filter2.recode.vcf --exclude 'F_PASS(GT=="het") > 0.1' -o SAP_imputed_Filter3.vcf
 ```
 ##Step.4 GWAS
 Almost! We'll be using rMVP, first we'll need to format the genotype data specifically for the program by running the Rscript: PrepGenoForMVP.R
@@ -86,7 +99,7 @@ For more details on rMVP see:
 https://github.com/xiaolei-lab/rMVP
 
 Now we're ready to start a GWAS the basic script to use is RunRMVP.R, which will run mlm and FarmCPU and automatically make figures for you. 
-#TODO make a slurm file called RunR_3.sh to batch on hcc, allocate 100 GB on 1 node and this will run pretty fast. 
+#TODO make a slurm file called RunR_3.sh to batch on hcc, allocate 60 GB on 1 node and this will run pretty fast. 
 Have the script submit the R file and move all the output files to the output folder 
 
 Use your favorite file transfer system to move all the output to your computer to view the files.
