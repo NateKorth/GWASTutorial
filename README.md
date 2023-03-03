@@ -112,12 +112,12 @@ summary(fit3)
 #Okay this is looking better (not perfect but things are rarely perfect when working with real biological data)
 ```
 
-Edit the R script: CalculateBLUEs.R to reflect the model you've come up with
+Edit the R script: CalculateBLUEs.R to reflect the model you've come up with (using command nano)
 Batch the script as a job using RunR_1.sh
 
 For more details on he sommer package see: https://cran.r-project.org/web/packages/sommer/vignettes/v3.sommer.qg.pdf
 
-##Step3: Genotype filtering
+## Step3: Genotype filtering
 
 We need to make sure the Lines in the phenotype file and genotype file match, using the "LinesInPheno.csv" we just generated in R, now filter the genotype file:
 ```
@@ -135,7 +135,7 @@ filter snps with high heterozygosity using bcftools
 ml bcftools
 bcftools filter SAP_imputed_Filter2.recode.vcf --exclude 'F_PASS(GT=="het") > 0.1' -o SAP_imputed_Filter3.vcf
 ```
-##Step.4 GWAS
+## Step.4 GWAS
 Almost! We'll be using rMVP, first we'll need to format the genotype data specifically for the program by running the Rscript: PrepGenoForMVP.R
 This is getting big enough that we should batch this job in a slurm file (RunR_2.sh)
 
@@ -152,7 +152,7 @@ Have the script submit the R file and move all the output files to the output fo
 
 Use your favorite file transfer system to move all the output to your computer to view the files.
 
-##Step.4 RMIP
+## Step.5 RMIP
 We can use all the same input data from the last step, just make a slurm file to run RunRMIP.R and you'll have output
 This script doesn't contain any fancy visualization so we'll have to do that manually, here's some basic code to do it in R:
 
