@@ -90,22 +90,23 @@ df3$Rep<-as.character(df3$Rep)
 #Fit a the most complex Linear model you can imagine:
 ##Format: model <- mmer (Phenotype~FixedEffect, random=~RandomEffects, data=YourDataFrame)
 
-fit <-mmer(Tannins~PI, random=~Year+Env+Rep+Year:Env+Year:Rep+Env:Rep, rcov=~units, data=df3)
+fit <-mmer(Tannins~PI, random=~Year+Env+Rep+Year:Env+Year:Rep+Env:Rep+PI:Year+PI:Env, rcov=~units, data=df3)
 #Let's look at the fit of our model:
 summary(fit)
 
 #Look at the AIC and BIC values for goodness of fit, and the varComp for how much variance is explained by each Random effect
 #Rep has a pretty small percentage of variance, let's remove it and see how it effects our Fit (when you remove Rep you should also remove interaction terms)
 
-fit2 <-mmer(Tannins~PI, random=~Year+Env+Year:Env, rcov=~units, data=df3)
+fit2 <-mmer(Tannins~PI, random=~Year+Env+Year:Env+PI:Year+PI:Env, rcov=~units, data=df3)
 summary(fit2)
 
 #okay the AIC and BIC are slightly larger, that's okay a small increase percentage wise.
 #Notice something weird? All the variance-covariance components for Year are the same as Year:Env
 #Why is that? There's two environments and 4 years, but it's unbalanced data for the NE Env only 1 year is represented, the other 3 years are all present in Texas
 #This is causing the interaction effect to be equivilent to the year effect, let's remove it from our model
+#For a very similar reason the the gxe interactions are also confounded, let's remove the term that's lower and see what happens:
 
-fit3 <-mmer(Tannins~PI, random=~Year+Env, rcov=~units, data=df3)
+fit3 <-mmer(Tannins~PI, random=~Year+Env+PI:Year, rcov=~units, data=df3)
 summary(fit3)
 
 #Okay this is looking better (not perfect but things are rarely perfect when working with real biological data)
@@ -146,11 +147,45 @@ For more details on rMVP see:
 https://github.com/xiaolei-lab/rMVP
 
 Now we're ready to start a GWAS the basic script to use is RunRMVP.R, which will run mlm and FarmCPU and automatically make figures for you. 
-#TODO make a slurm file called RunR_3.sh to batch on hcc, allocate 60 GB on 1 node and this will run pretty fast. 
+#TODO make a slurm file called RunR_3.sh to batch on hcc, allocate 40 GB on 1 node and this will run pretty fast. 
 Have the script submit the R file and move all the output files to the output folder 
 
 Use your favorite file transfer system to move all the output to your computer to view the files.
 
+##Step.4 RMIP
+We can use all the same input data from the last step, just make a slurm file to run RunRMIP.R and you'll have output
+This script doesn't contain any fancy visualization so we'll have to do that manually, here's some basic code to do it in R:
+
+```
+ml R/4.0
+R
+install.packages("tidyverse)
+
+GWAS1<-read.csv(YOUROUTPUTFILEHERE)
+
+data_cum <- GWAS1 %>%
+  group_by(CHR) %>%
+  summarise(max_bp = max(BP)) %>%
+  mutate(bp_add = lag(cumsum(max_bp), default = 0)) %>%
+  select(CHR, bp_add)
+
+GWAS1 <- GWAS1 %>%
+  inner_join(data_cum, by = "CHR") %>%
+  mutate(bp_cum = BP + bp_add)
+
+axis_set <- GWAS1 %>%
+  group_by(CHR) %>%
+  summarize(center = mean(bp_cum))
+
+GWAS2<-cbind(GWAS1,GWASM)
+
+ggplot(GWAS5, aes(x=bp_cum,y=FREQ))+ geom_point(),size=2)+
+  scale_x_continuous(label = axis_set2$CHR, breaks = axis_set4$center) + scale_y_continuous(expand = c(0,0), limits = c(0, 100)) +
+  scale_size_continuous(range = c(0.5,3)) + ylab("RMIP Frequency") + xlab(NULL)+unique(length(axis_set3$CHR))))+
+  theme_minimal() + theme(panel.border = element_blank(),panel.grid.major.x = element_blank(),plot.margin=unit(c(1,0,0,0),"cm"), 
+  panel.grid.minor.x = element_blank(),axis.text.x = element_text(angle = 0, size = 16, vjust = 0.5))+)+ labs(fill='Trait Type')+
+  geom_hline(yintercept=10, linetype="dashed",color="black")
+```
 
 
 
