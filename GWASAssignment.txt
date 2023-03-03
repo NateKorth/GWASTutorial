@@ -1,0 +1,15 @@
+What is the goal of GWAS?
+
+What’s the difference between BLUPs and BLUEs? 
+
+When calculating BLUEs why should we treat Year as categorical data and not numerical?
+
+With a cutoff maf of 0.05 how many lines need to contain the minor allele to not be removed during filtering?
+
+How many SNPs in the genotype file (after all other filtering steps) contained more than 10% heterozygous alleles?
+
+Based on your output for tannins if you had to guess, where is the most important gene in regulating tannin production?
+
+Edit the code to run the ash trait with 5PCs in the GWAS model, how do the qqplots look now? (Submit all relevant QQ plots)
+
+Remove the outliers from starch and Rerun the GWAS. How does your output look now? (Attach both manhatten plots)
