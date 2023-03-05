@@ -35,7 +35,7 @@ run_pipeline.pl -Xms512m -Xmx10G -fork1 -h SAP_imputed.hmp -export -exportType V
 next grab the phenotype file:
 make sure it ends up in your input folder
 ```
-curl -o PhenotypesRaw.csv https://raw.githubusercontent.com/NateKorth/GWASTutorial/main/nir_SC_Compiled_Rhodes2014.csv
+curl -o PhenotypesRaw.csv https://raw.githubusercontent.com/NateKorth/GWASTutorial/main/nir_SC_Compiled_Rhodes2014_Korth2020.csv
 ```
 We'll need the lines in our Genotype file and Phenotype file to match. There's one hundred ways to do this, we'll do it in R (You can use the command line to access R as shown below, or if you prefer Rstudio feel free to use that).
 First we'll remove lines in the phenotype file that are not in the genotype file 
