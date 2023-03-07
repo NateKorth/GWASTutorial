@@ -7,15 +7,25 @@ First things first make a new project folder in your work directory
 ```
 cd $WORK
 mkdir GWASTutorial
-mkdir GWASTutorial/input
-mkdir GWASTutorial/input/Genotype
 mkdir GWASTutorial/Scripts
 mkdir GWASTutorial/Output
+mkdir GWASTutorial/input
+mkdir GWASTutorial/input/Genotype
 ```
+
+For BLUE calculation we'll need a bit of computational resourses (best not to do this on the work node) 
+Politely ask HCC for some resourses
+```
+srun --nodes=1 --ntasks-per-node=4 --mem-per-cpu=2024 --qos=short --pty $SHELL
+```
+
 
 Download the genotype data from the following location and transfer to Genotype folder:
 ```
 https://figshare.com/ndownloader/files/22670489
+
+#An easy way to do this is (once you've downladed the file) use scp from your command prompt on your computer:
+scp .\Downloads\SAP_imputed.hmp.zip USERNAME@crane.unl.edu:/work/GROUP/USERNAME/GWASTutorial/input/Genotype
 ```
 
 This is an imputed SNP file from: Miao, C., Xu, Y., Liu, S., Schnable, P.S. and Schnable, J.C., 2020. Increased power and accuracy of causal locus identification in time series genome-wide association in sorghum. Plant physiology, 183(4), pp.1898-1909.
@@ -43,13 +53,13 @@ First we'll remove lines in the phenotype file that are not in the genotype file
 cd $WORK/GWASTutorial/Scripts
 ml R/4.0
 R
-df1<-read.csv("../input/nir_SC_Compiled_Rhodes2014_Korth2020.csv")
+df1<-read.csv("../input/PhenotypesRaw.csv")
 
 #Remove any lines without a PI identifier
 df2<-subset(df1,PI!="NA")
 
 #Import the list of of genotypes:
-LinesInHmp<-read.delim("../input/geno/hmpHeader.tsv",header = FALSE)
+LinesInHmp<-read.delim("../input/Genotype/hmpHeader.tsv",header = FALSE)
 LinesInHmp2<-as.data.frame(t(LinesInHmp[12:369]))
 names(LinesInHmp2)<-"PI"
 
