@@ -13,8 +13,8 @@ mkdir GWASTutorial/input
 mkdir GWASTutorial/input/Genotype
 ```
 
-For BLUE calculation we'll need a bit of computational resourses (best not to do this on the work node) 
-Politely ask HCC for some resourses
+For BLUE calculation we'll need a bit of computational resourses (best not to do this on the login node) 
+Politely ask HCC for some resourses - if it's not allocating try reducing the resourses requested, this may be more than needed
 ```
 srun --nodes=1 --ntasks-per-node=4 --mem-per-cpu=2024 --qos=short --pty $SHELL
 ```
