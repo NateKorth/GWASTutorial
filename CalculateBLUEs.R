@@ -1,6 +1,6 @@
 library(sommer)
 
-df1<-read.csv("../input/nir_SC_Compiled_Rhodes2014_Korth2020.csv")
+df1<-read.csv("../input/PhenotypesRaw.csv")
 
 #Remove any lines without a PI identifier
 df2<-subset(df1,PI!="NA")
